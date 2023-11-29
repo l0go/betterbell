@@ -1,4 +1,4 @@
-package main
+package audio
 
 import (
 	"context"
@@ -10,12 +10,14 @@ import (
 	mp3 "github.com/hajimehoshi/go-mp3"
 )
 
-func playMp3(ctx context.Context, filename string) error {
+func PlayMP3(ctx context.Context, filename string) error {
 	f, err := os.Open(filename)
 	if err != nil {
 		return fmt.Errorf("could not open %s: %s", filename, err.Error())
 	}
 	defer f.Close()
+
+    defer fmt.Println(f)
 
 	dec, err := mp3.NewDecoder(f)
 	if err != nil {
@@ -29,7 +31,7 @@ func playMp3(ctx context.Context, filename string) error {
 	}
 	defer p.Close()
 
-	_, err = CopyCtx(ctx, p, dec)
+	_, err = copyCtx(ctx, p, dec)
 
 	return err
 }
@@ -39,12 +41,7 @@ type readerFunc func(p []byte) (n int, err error)
 
 func (rf readerFunc) Read(p []byte) (n int, err error) { return rf(p) }
 
-// Note that we cancel on the reader; ensuring that any consumed byte is
-// attempted to be written, but it also means that:
-//  - we reduce the granularity of the the cancellation window
-//  - anyway, if any of read or write blocks, it blocks cancellation, but this
-//    is out of scope
-func CopyCtx(ctx context.Context, dst io.Writer, src io.Reader) (int64, error) {
+func copyCtx(ctx context.Context, dst io.Writer, src io.Reader) (int64, error) {
 	n, err := io.Copy(dst, readerFunc(func(p []byte) (int, error) {
 
 		select {

@@ -1,0 +1,56 @@
+/* Defaults: Make things look nicer */
+:root {
+	--background-color-1: #262629;
+	--background-color-2: #343438;
+	--accent-color: #1e7df0;
+	--accent-color-hover: #1763bf;
+	--accent-color-active: #1456a6;
+	--font-color-1: #e8ecef;
+	--button-color-1: #414141;
+	--button-color-hover: #515151;
+	--button-color-active: #616161;
+}
+
+body {
+	background-color: var(--background-color-1);
+	min-height: 100vh;
+	margin: 0;
+	font-family: Segoe UI,system-ui,-apple-system,sans-serif;
+	display: flex;
+	flex-direction: column;
+}
+
+h1, h2, h3, p {
+	margin: 0;
+	color: var(--font-color-1);
+}
+
+a {
+	color: var(--accent-color);
+}
+
+a:hover {
+	color: var(--accent-color-hover);
+}
+
+a:active {
+	color: var(--accent-color-active);
+}
+
+/* Sections */
+main {
+	margin-top: 12px;
+	margin-left: 60px;
+	margin-right: 60px;
+	flex-grow: 1;
+}
+
+nav {
+	display: flex;
+    background-color: var(--background-color-2);
+	padding: 24px;
+	padding-left: 48px;
+	padding-right: 48px;
+	justify-content: space-between;
+	align-items: center;
+}

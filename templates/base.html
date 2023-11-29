@@ -1,0 +1,18 @@
+{{define "base"}}
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Betterbell</title>
+        <link rel="stylesheet" type="text/css" href="/static/index.css" />
+    </head>
+    <body>
+        <nav>
+            <h1>Bell Admin</h1>
+            <a href="#">Logout</a>
+        </nav>
+        <main>
+            {{template "content" .}}
+        </main>
+    </body>
+</html>
+{{end}}

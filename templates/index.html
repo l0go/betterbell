@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Betterbell</title>
+        <link rel="stylesheet" type="text/css" href="/static/index.css" />
+    </head>
+    <body>
+        <nav>
+            <h1>Bell Admin</h1>
+            <a href="#">Logout</a>
+        </nav>
+        <main>
+            <form method="POST" action="/select-device">
+                <select name="devices">
+                    {{range $val := .PlaybackDevices}}
+                        <option value="{{$val}}">{{$val}}</option>
+                    {{end}}
+                </select>
+                <input type="submit" value="Set">
+            </form>
+        </main>
+    </body>
+</html>
