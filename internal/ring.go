@@ -10,7 +10,7 @@ import (
 	mp3 "github.com/hajimehoshi/go-mp3"
 )
 
-func Ring() error {
+func Ring(id int) error {
 	log.Println("Ring!")
 
 	f, err := os.Open("./static/bell.mp3")

@@ -7,8 +7,8 @@
   </head>
   <body>
     <nav>
-      <h1>Bell Admin</h1>
-      <a href="#">Logout</a>
+      <h1><a class="no-highlight" href="/">💍 Bell Admin</a></h1>
+      {{block "nav-element" .}}{{end}}
     </nav>
     <main>{{template "content" .}}</main>
   </body>

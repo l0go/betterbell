@@ -3,9 +3,10 @@ package internal
 import (
 	"database/sql"
 	"errors"
-	"github.com/go-co-op/gocron"
 	"log"
 	"strconv"
+
+	"github.com/go-co-op/gocron"
 )
 
 type JobsState struct {
@@ -13,6 +14,7 @@ type JobsState struct {
 	DB        *sql.DB
 }
 
+// This is equivalent to the rows in the CronJobs table
 type Job struct {
 	ID         int
 	Title      string
@@ -25,8 +27,8 @@ func (j JobsState) Add(title, expression string) error {
 	result, err := j.DB.Exec("INSERT INTO CronJobs (title, expression, enabled) VALUES(?, ?, true)", title, expression)
 	id, err2 := result.LastInsertId()
 	j.Scheduler.Cron(expression).Tag(strconv.Itoa(int(id))).Do(func() {
-		if err := Ring(); err != nil {
-            log.Printf("Adding cron job failed: %s\n", err)
+		if err := Ring(int(id)); err != nil {
+			log.Printf("Adding cron job failed: %s\n", err)
 		}
 	})
 	j.Scheduler.StartAsync()
@@ -43,11 +45,11 @@ func (j JobsState) Remove(id string) error {
 // Removes a job
 func (j JobsState) Toggle(id string) error {
 	_ = j.Scheduler.RemoveByTag(id)
-    _, err := j.DB.Exec("UPDATE CronJobs SET enabled = NOT enabled WHERE ID=?;", id)
-    return err
+	_, err := j.DB.Exec("UPDATE CronJobs SET enabled = NOT enabled WHERE ID=?;", id)
+	return err
 }
 
-// Returns the jobs from the database 
+// Returns the jobs from the database
 func (j JobsState) Get() []Job {
 	rows, err := j.DB.Query("SELECT id, title, expression, enabled FROM CronJobs ORDER BY id;")
 	if err != nil {
@@ -70,10 +72,10 @@ func (j JobsState) Get() []Job {
 
 // Re-adds all of the jobs to the scheduler
 func (j JobsState) Persist() {
-    jobs := j.Get()
+	jobs := j.Get()
 	for _, job := range jobs {
 		j.Scheduler.Cron(job.Expression).Tag(strconv.Itoa(job.ID)).Do(func() {
-			if err := Ring(); err != nil {
+			if err := Ring(job.ID); err != nil {
 				log.Fatal(err)
 			}
 		})

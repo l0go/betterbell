@@ -1,6 +1,6 @@
 # Betterbell
 
-Rings a bell at specified intervals with a pretty UI. Eventually I would like to manage an instance with Gokrazy.
+Rings a bell at specified intervals with a pretty UI. The goal is to eventually manage an instance with [Gokrazy](https://gokrazy.org/).
 
 ## Building
 
