@@ -1,32 +1,32 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-    <head>
-        <title>Betterbell</title>
-        <link rel="stylesheet" type="text/css" href="/static/index.css" />
-    </head>
-    <body>
-        <nav>
-            <h1>💍 Bell Admin</h1>
-            <a href="/job/add" class="button-basic">Add new job</a>
-        </nav>
-        <main>
-            <div class="job-list">
-                    {{ range $key, $value := . }}
-                    <div class="job {{ if not $value.Enabled }} job-disabled {{end}}">
-                        <p>{{ $value.Title }}{{ if not $value.Enabled }} (disabled){{end}}</p>
-                        <form method="POST">
-				            <label for="text">Action:</label>
-                            <select name="action">
-                                <option value="" disabled selected>Select an action</option>
-                                <option value="ring-{{ $value.ID }}">Ring</option>
-                                <option value="delete-{{ $value.ID }}">Delete Job</option>
-                                <option value="toggle-{{ $value.ID }}">Toggle Job</option>
-                            </select>
-				            <input type="submit" class="button-basic" value="Act">
-                        </form>
-                    </div>
-                    {{ end }}
-            </div>
-        </main>
-    </body>
+  <head>
+    <title>Betterbell</title>
+    <link rel="stylesheet" type="text/css" href="/static/index.css" />
+  </head>
+  <body>
+    <nav>
+      <h1>💍 Bell Admin</h1>
+      <a href="/job/add" class="button-basic">Add new job</a>
+    </nav>
+    <main>
+      <div class="job-list">
+        {{ range $key, $value := . }}
+        <div class="job {{ if not $value.Enabled }} job-disabled {{end}}">
+          <p>{{ $value.Title }}{{ if not $value.Enabled }} (disabled){{end}}</p>
+          <form method="POST">
+            <label for="text">Action:</label>
+            <select name="action">
+              <option value="" disabled selected>Select an action</option>
+              <option value="ring-{{ $value.ID }}">Ring</option>
+              <option value="delete-{{ $value.ID }}">Delete Job</option>
+              <option value="toggle-{{ $value.ID }}">Toggle Job</option>
+            </select>
+            <input type="submit" class="button-basic" value="Act" />
+          </form>
+        </div>
+        {{ end }}
+      </div>
+    </main>
+  </body>
 </html>
