@@ -1,35 +1,51 @@
 package main
 
 import (
-    "io/ioutil"
-    "os"
+	"codeberg.org/logo/betterbell/internal"
+
+	"database/sql"
 	"html/template"
 	"log"
 	"net/http"
-	//"codeberg.org/logo/betterbell/audio"
-	//	"os"
+	"strings"
+	"time"
 
-	mp3 "github.com/hajimehoshi/go-mp3"
-	"github.com/yobert/alsa"
+	_ "github.com/glebarez/go-sqlite"
+	"github.com/go-co-op/gocron"
 )
 
 var tpl *template.Template
-
-var cfg config
-
-type config struct {
-	Output          *alsa.Device
-	PlaybackDevices []*alsa.Device
-}
+var jobs internal.JobsState
 
 func main() {
 	log.Println("Running")
 
-	cfg.PlaybackDevices, _ = playbackDevice()
-    err := beepDevice(cfg.PlaybackDevices[0])
-    if err != nil {
-        log.Fatal(err)
-    }
+	// Create database
+	db, err := sql.Open("sqlite", "./bell.db")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	// Create jobs table
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS CronJobs (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, expression TEXT, enabled BOOLEAN);")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create user table
+	_, err = db.Exec("CREATE TABLE IF NOT EXISTS Users (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, hash TEXT, salt TEXT);")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// Create the gocron scheduler
+	scheduler := gocron.NewScheduler(time.Local)
+	jobs = internal.JobsState{
+		Scheduler: scheduler,
+		DB:        db,
+	}
+	jobs.Persist()
 
 	// HTTP
 	tpl, err = template.ParseGlob("templates/*.html")
@@ -39,7 +55,7 @@ func main() {
 
 	http.HandleFunc("/", getRoot)
 	http.HandleFunc("/login", getLogin)
-	http.HandleFunc("/select-device", postSelectDevice)
+	http.HandleFunc("/job/add", getJobAdd)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	err = http.ListenAndServe(":3333", nil)
@@ -48,108 +64,51 @@ func main() {
 	}
 }
 
+// Index reachable at /
+// Contains a list of the jobs and actions that can be acted upon them
 func getRoot(w http.ResponseWriter, r *http.Request) {
-	tpl.ExecuteTemplate(w, "index.html", cfg)
+	if r.Method == http.MethodPost {
+		action, id, _ := strings.Cut(r.FormValue("action"), "-")
+		switch action {
+		case "ring":
+			if err := internal.Ring(); err != nil {
+				log.Fatal(err)
+			}
+		case "delete":
+			if err := jobs.Remove(id); err != nil {
+                log.Printf("Removing job failed: %s\n", err)
+			}
+        case "toggle":
+            if err := jobs.Toggle(id); err != nil {
+                log.Printf("Toggling job failed: %s\n", err)
+            }
+        }
+	}
+	tpl.ExecuteTemplate(w, "index.html", jobs.Get())
 }
 
+// Login page reachable at /login
+// Allows you to login to access the rest of the service
 func getLogin(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.ServeFile(w, r, "templates/login.html")
 	}
 }
 
-func postSelectDevice(w http.ResponseWriter, r *http.Request) {
+// Job adding page reachable at /job/add
+// Allows you to add a job
+func getJobAdd(w http.ResponseWriter, r *http.Request) {
 	if r.Method == http.MethodPost {
-		for _, device := range cfg.PlaybackDevices {
-			if device.Title == r.FormValue("devices") {
-				cfg.Output = device
-				break
-			}
-		}
-	}
-	beepDevice(cfg.Output)
-}
+		title := r.FormValue("title")
+		expression := r.FormValue("cron-expression")
 
-func playbackDevice() ([]*alsa.Device, error) {
-	cards, err := alsa.OpenCards()
-	if err != nil {
-		return nil, err
-	}
-	defer alsa.CloseCards(cards)
-
-	var playback_device []*alsa.Device
-	for _, card := range cards {
-		devices, err := card.Devices()
-		if err != nil {
-			return nil, err
+		if len(title) == 0 || len(expression) == 0 {
+			log.Fatal("Job form data is invalid")
 		}
 
-		for _, device := range devices {
-			if device.Type != alsa.PCM {
-				continue
-			}
-			if device.Play {
-				playback_device = append(playback_device, device)
-			}
+		if err := jobs.Add(title, expression); err != nil {
+			log.Fatal(err)
 		}
 	}
-
-	return playback_device, nil
-}
-
-func beepDevice(device *alsa.Device) error {
-	var err error
-	if err = device.Open(); err != nil {
-		return err
-	}
-
-    f, err := os.Open("/src/static/bell.mp3")
-	if err != nil {
-        return err
-	}
-    defer f.Close()
-
-    dec, err := mp3.NewDecoder(f)
-    if err != nil {
-        return err
-    }
-
-	_, err = device.NegotiateFormat(alsa.S16_LE)
-	if err != nil {
-		return err
-	}
-
-	_, err = device.NegotiateChannels(2)
-	if err != nil {
-		return err
-	}
-
-	_, err = device.NegotiateRate(dec.SampleRate())
-	if err != nil {
-		return err
-	}
-
-    _, err = device.NegotiatePeriodSize(1024*2)
-	if err != nil {
-		return err
-	}
-
-    _, err = device.NegotiateBufferSize(2048*2)
-    if err != nil {
-		return err
-	}
-
-	if err = device.Prepare(); err != nil {
-		return err
-	}
-    
-	// Wait for playback to complete.
-    buf, err := ioutil.ReadAll(dec)
-	if err != nil {
-		panic(err.Error())
-	}
-
-    device.Write(buf, int(dec.Length()) / device.BytesPerFrame())
-
-	return nil
+	tpl.ExecuteTemplate(w, "add-job.html", nil)
 }

@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Betterbell</title>
+        <link rel="stylesheet" type="text/css" href="/static/index.css" />
+        <link rel="stylesheet" href="https://unpkg.com/cron-expression-input@1.2.7/lib/cron-expression-input.min.css">
+        <script src="https://unpkg.com/cron-expression-input@1.2.7/lib/cron-expression-input.min.js"></script>
+    </head>
+    <body>
+        <nav>
+            <h1>💍 Bell Admin</h1>
+        </nav>
+        <main>
+            <blockquote>
+                <p><b>Need help with the cron syntax?</b> Try this tool: <a href="https://crontab.guru/">crontab.guru/</a></p>
+            </blockquote>
+
+			<form class="add-job" method="POST"> 
+			    <h2>Create a new job</h2>
+				<label for="text">Job Title:</label>
+				<input placeholder="Enter the title of the job" type="text" name="title" required>
+				<label for="text">Cron Expression:</label>
+				<input placeholder="* * * * *" type="text" name="cron-expression" required>
+				<input type="submit" class="button-basic" value="Add">
+			</form>
+        </main>
+    </body>
+</html>

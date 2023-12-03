@@ -7,19 +7,26 @@
     <body>
         <nav>
             <h1>💍 Bell Admin</h1>
-            <form method="POST" action="/select-device">
-                <select name="devices">
-                    {{range $val := .PlaybackDevices}}
-                        <option value="{{$val}}">{{$val}}</option>
-                    {{end}}
-                </select>
-                <input class="button-basic" type="submit" value="Set Device">
-            </form>
+            <a href="/job/add" class="button-basic">Add new job</a>
         </nav>
         <main>
-            <blockquote>
-                <p><b>Need help with the cron syntax?</b> Try this tool: <a href="https://crontab.guru/">crontab.guru/</a></p>
-            </blockquote>
+            <div class="job-list">
+                    {{ range $key, $value := . }}
+                    <div class="job {{ if not $value.Enabled }} job-disabled {{end}}">
+                        <p>{{ $value.Title }}{{ if not $value.Enabled }} (disabled){{end}}</p>
+                        <form method="POST">
+				            <label for="text">Action:</label>
+                            <select name="action">
+                                <option value="" disabled selected>Select an action</option>
+                                <option value="ring-{{ $value.ID }}">Ring</option>
+                                <option value="delete-{{ $value.ID }}">Delete Job</option>
+                                <option value="toggle-{{ $value.ID }}">Toggle Job</option>
+                            </select>
+				            <input type="submit" class="button-basic" value="Act">
+                        </form>
+                    </div>
+                    {{ end }}
+            </div>
         </main>
     </body>
 </html>
