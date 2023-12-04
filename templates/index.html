@@ -1,7 +1,7 @@
 {{define "nav-element"}}
 <a href="/job/add" class="button-basic">Add new job</a>
 {{end}} {{define "content"}}
-<div class="job-list">
+<div class="list">
   {{ range $key, $value := . }}
   <div class="job {{ if not $value.Enabled }} job-disabled {{end}}">
     <p>{{ $value.Title }}{{ if not $value.Enabled }} (disabled){{end}}</p>

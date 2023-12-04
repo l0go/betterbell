@@ -103,6 +103,18 @@ form.column {
   flex-direction: column;
 }
 
+.secret {
+  border-radius: 3px;
+  color: transparent;
+  background-color: var(--background-color-2);
+  user-select: none;
+}
+
+.secret:hover {
+  color: var(--font-color-1);
+  user-select: all;
+}
+
 input[type="text"],
 input[type="password"] {
   background-color: var(--button-color-1);
@@ -141,7 +153,7 @@ select {
   text-decoration: none;
 }
 
-.job-list {
+.list {
   display: flex;
   flex-direction: column;
   gap: 8px;

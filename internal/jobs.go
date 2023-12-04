@@ -3,6 +3,7 @@ package internal
 import (
 	"database/sql"
 	"errors"
+	"fmt"
 	"log"
 	"strconv"
 
@@ -11,6 +12,7 @@ import (
 
 type JobsState struct {
 	Scheduler *gocron.Scheduler
+	Peers     *PeerState
 	DB        *sql.DB
 }
 
@@ -25,14 +27,23 @@ type Job struct {
 // Adds a job
 func (j JobsState) Add(title, expression string) error {
 	result, err := j.DB.Exec("INSERT INTO CronJobs (title, expression, enabled) VALUES(?, ?, true)", title, expression)
-	id, err2 := result.LastInsertId()
+	if err != nil {
+		return fmt.Errorf("Could not insert: %s", err)
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return fmt.Errorf("Could not get insert ID: %s", err)
+	}
+
 	j.Scheduler.Cron(expression).Tag(strconv.Itoa(int(id))).Do(func() {
-		if err := Ring(int(id)); err != nil {
+		if err := Ring(int(id), j.Peers); err != nil {
 			log.Printf("Adding cron job failed: %s\n", err)
 		}
 	})
 	j.Scheduler.StartAsync()
-	return errors.Join(err, err2)
+
+	return nil
 }
 
 // Removes a job
@@ -75,7 +86,7 @@ func (j JobsState) Persist() {
 	jobs := j.Get()
 	for _, job := range jobs {
 		j.Scheduler.Cron(job.Expression).Tag(strconv.Itoa(job.ID)).Do(func() {
-			if err := Ring(job.ID); err != nil {
+			if err := Ring(job.ID, j.Peers); err != nil {
 				log.Fatal(err)
 			}
 		})

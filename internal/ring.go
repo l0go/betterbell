@@ -1,8 +1,11 @@
 package internal
 
 import (
+	"fmt"
 	"io"
 	"log"
+	"net/http"
+	"net/url"
 	"os"
 	"time"
 
@@ -10,8 +13,8 @@ import (
 	mp3 "github.com/hajimehoshi/go-mp3"
 )
 
-func Ring(id int) error {
-	log.Println("Ring!")
+func Ring(id int, peers *PeerState) error {
+	log.Printf("%d: Ring!", id)
 
 	f, err := os.Open("./static/bell.mp3")
 	if err != nil {
@@ -59,6 +62,22 @@ func Ring(id int) error {
 		return err
 	}
 
+	go func() error {
+		for _, peer := range peers.Get() {
+			url, err := url.Parse(peer.Endpoint)
+			if err != nil {
+				return err
+			}
+
+			_, err = http.Head(fmt.Sprintf("%s://%s/ring/?id=%d&secret=%s", url.Scheme, url.Host, id, peer.Secret))
+			if err != nil {
+				return err
+			}
+		}
+		return nil
+	}()
+
+	// TODO: Make this less hardcoded
 	time.Sleep(4 * time.Second)
 
 	return nil

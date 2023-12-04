@@ -58,6 +58,7 @@ func (a AuthState) Check(username, password string) (LoginStatus, error) {
 	if err != nil {
 		return UnknownLoginError, err
 	}
+	defer rows.Close()
 
 	// Get the user
 	var user User
