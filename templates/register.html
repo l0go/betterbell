@@ -1,5 +1,7 @@
 {{define "content"}}
-<p>{{.}}</p>
+{{ if . }}
+<blockquote><p>{{.}}</p></blockquote>
+{{end}}
 <form class="column" method="POST">
   <h2>Register</h2>
   <label for="text">Username:</label>
