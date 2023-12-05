@@ -47,18 +47,22 @@ func (v JobViews) GetIndex(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method == http.MethodPost {
 		action, id, _ := strings.Cut(r.FormValue("action"), "-")
+		idInt, err := strconv.Atoi(id)
+		if err != nil {
+			log.Printf("Could not convert id to int: %s\n", err)
+		}
+
 		switch action {
 		case "ring":
-			intId, _ := strconv.Atoi(id)
-			if err := internal.Ring(intId, &v.Peers.State); err != nil {
+			if err := internal.Ring(idInt, &v.Peers.State); err != nil {
 				log.Fatal(err)
 			}
 		case "delete":
-			if err := v.State.Remove(id); err != nil {
+			if err := v.State.Remove(idInt); err != nil {
 				log.Printf("Removing job failed: %s\n", err)
 			}
 		case "toggle":
-			if err := v.State.Toggle(id); err != nil {
+			if err := v.State.Toggle(idInt); err != nil {
 				log.Printf("Toggling job failed: %s\n", err)
 			}
 		}
@@ -84,5 +88,5 @@ func (v JobViews) GetJobAdd(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		}
 	}
-	v.IndexTemplate.ExecuteTemplate(w, "base", nil)
+	v.AddJobTemplate.ExecuteTemplate(w, "base", nil)
 }
