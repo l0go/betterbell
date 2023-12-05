@@ -8,12 +8,11 @@
   <body>
     <nav>
       <h1><a class="no-highlight" href="/">💍 Bell Admin</a></h1>
-      {{block "nav-element" .}}{{end}}
+      <div class="tab">
+        <a href="/">Jobs</a>
+        <a href="/peers">Peers</a>
+      </div>
     </nav>
-    <div class="tab">
-      <a href="/">Jobs</a>
-      <a href="/peers">Peers</a>
-    </div>
     <main>{{template "content" .}}</main>
   </body>
 </html>

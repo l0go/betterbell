@@ -7,14 +7,21 @@
   </p>
 </blockquote>
 
-<form method="POST">
-  <h2>Peers</h2>
-  <label for="text">Peer Endpoint</label>
-  <input placeholder="(ex: 192.168.0.1)" type="text" name="endpoint" required />
-  <label for="text">Secret</label>
-  <input placeholder="Secret" type="password" name="secret" required />
-  <input type="submit" class="button-basic" value="Add" />
-</form>
+<h2>Peers</h2>
+<div class="tools">
+  <form method="POST">
+    <label for="text">Peer Endpoint</label>
+    <input
+      placeholder="(ex: 192.168.0.1)"
+      type="text"
+      name="endpoint"
+      required
+    />
+    <label for="text">Secret</label>
+    <input placeholder="Secret" type="password" name="secret" required />
+    <input type="submit" class="button-basic" value="Add" />
+  </form>
+</div>
 
 <div class="list">
   {{ range $key, $value := .Get }}

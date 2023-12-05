@@ -36,6 +36,11 @@ func CreateAuth(db *sql.DB) AuthViews {
 
 // Allows you to login to access the rest of the service
 func (v AuthViews) GetLogin(w http.ResponseWriter, r *http.Request) {
+	params, err := url.ParseQuery(r.URL.RawQuery)
+	if err != nil {
+		log.Println(err)
+	}
+
 	if r.Method == http.MethodPost {
 		username := r.FormValue("username")
 		password := r.FormValue("password")
@@ -52,13 +57,25 @@ func (v AuthViews) GetLogin(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 			http.SetCookie(w, &session)
-			http.Redirect(w, r, "/", http.StatusSeeOther)
+
+			if _, ok := params["redirect"]; ok {
+				http.Redirect(w, r, params["redirect"][0], http.StatusSeeOther)
+			} else {
+				http.Redirect(w, r, "/", http.StatusSeeOther)
+			}
 		} else {
 			// Account is not valid
-			log.Println(internal.FormatLoginStatus(status))
+			http.Redirect(w, r, fmt.Sprintf("/login?error=%d", status), http.StatusSeeOther)
 		}
 		return
 	}
+
+	if _, ok := params["error"]; ok {
+		errorStatus, _ := strconv.Atoi(params["error"][0])
+		v.LoginTemplate.ExecuteTemplate(w, "base", internal.FormatLoginStatus(internal.LoginStatus(errorStatus)))
+		return
+	}
+
 	v.LoginTemplate.ExecuteTemplate(w, "base", nil)
 }
 
@@ -110,7 +127,8 @@ func (v AuthViews) CheckPermission(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if !has {
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
+		path := r.URL.Path
+		http.Redirect(w, r, fmt.Sprintf("/login?redirect=%s", path), http.StatusSeeOther)
 		return
 	}
 }

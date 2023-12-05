@@ -1,4 +1,7 @@
 {{define "content"}}
+{{ if . }}
+<blockquote><p>{{.}}</p></blockquote>
+{{ end }}
 <form class="column" method="POST">
   <h2>Login</h2>
   <label for="text">Username:</label>
