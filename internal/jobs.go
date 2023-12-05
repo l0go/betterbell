@@ -116,6 +116,7 @@ func (j JobsState) Persist() {
 	}
 }
 
+// Adds a cron job via the gocron scheduler
 func (j JobsState) Schedule(id int, expression string) {
 	j.Scheduler.Cron(expression).Tag(strconv.Itoa(id)).Do(func() {
 		if err := Ring(id, j.Peers); err != nil {
