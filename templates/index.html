@@ -1,27 +1,27 @@
-{{define "content"}}
-<div class="tools">
-  <a href="/job/add" class="button-basic">Add new job</a>
-</div>
-
-<div class="list">
-  {{ range $key, $value := . }}
-  <div class="job {{ if not $value.Enabled }} job-disabled {{end}}">
-    <p>{{ $value.Title }}{{ if not $value.Enabled }} (disabled){{end}}</p>
-    <form method="POST">
-      <label for="text">Action:</label>
-      <select name="action">
-        <option value="" disabled selected>Select an action</option>
-        <option value="ring-{{ $value.ID }}">Ring</option>
-        <option value="delete-{{ $value.ID }}">Delete Job</option>
-        {{ if $value.Enabled }}
-        <option value="toggle-{{ $value.ID }}">Disable Job</option>
-        {{ else }}
-        <option value="toggle-{{ $value.ID }}">Enable Job</option>
-        {{ end }}
-      </select>
-      <input type="submit" class="button-basic" value="Act" />
-    </form>
+{{ define "content" }}
+  <div class="tools">
+    <a href="/job/add" class="button-basic">Add new job</a>
   </div>
-  {{ end }}
-</div>
-{{end}}
+
+  <div class="list">
+    {{ range $key, $value := . }}
+      <div class="job {{ if not $value.Enabled }}job-disabled{{ end }}">
+        <p>{{ $value.Title }}{{ if not $value.Enabled }}(disabled){{ end }}</p>
+        <form method="POST">
+          <label for="text">Action:</label>
+          <select name="action">
+            <option value="" disabled selected>Select an action</option>
+            <option value="ring-{{ $value.ID }}">Ring</option>
+            <option value="delete-{{ $value.ID }}">Delete Job</option>
+            {{ if $value.Enabled }}
+              <option value="toggle-{{ $value.ID }}">Disable Job</option>
+            {{ else }}
+              <option value="toggle-{{ $value.ID }}">Enable Job</option>
+            {{ end }}
+          </select>
+          <input type="submit" class="button-basic" value="Act" />
+        </form>
+      </div>
+    {{ end }}
+  </div>
+{{ end }}

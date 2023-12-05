@@ -1,12 +1,13 @@
-{{define "content"}} {{ if . }}
-<blockquote><p>{{.}}</p></blockquote>
+{{ define "content" }}
+  {{ if . }}
+    <blockquote><p>{{ . }}</p></blockquote>
+  {{ end }}
+  <form class="column" method="POST">
+    <h2>Login</h2>
+    <label for="text">Username:</label>
+    <input placeholder="Username" type="text" name="username" required />
+    <label for="text">Password:</label>
+    <input placeholder="Password" type="password" name="password" required />
+    <input type="submit" class="button-basic" value="Login" />
+  </form>
 {{ end }}
-<form class="column" method="POST">
-  <h2>Login</h2>
-  <label for="text">Username:</label>
-  <input placeholder="Username" type="text" name="username" required />
-  <label for="text">Password:</label>
-  <input placeholder="Password" type="password" name="password" required />
-  <input type="submit" class="button-basic" value="Login" />
-</form>
-{{end}}

@@ -1,19 +1,19 @@
-{{define "base"}}
-<!doctype html>
-<html>
-  <head>
-    <title>Betterbell</title>
-    <link rel="stylesheet" type="text/css" href="/static/index.css" />
-  </head>
-  <body>
-    <nav>
-      <h1><a class="no-highlight" href="/">💍 Bell Admin</a></h1>
-      <div class="tab">
-        <a href="/">Jobs</a>
-        <a href="/peers">Peers</a>
-      </div>
-    </nav>
-    <main>{{template "content" .}}</main>
-  </body>
-</html>
-{{end}}
+{{ define "base" }}
+  <!doctype html>
+  <html>
+    <head>
+      <title>Betterbell</title>
+      <link rel="stylesheet" type="text/css" href="/static/index.css" />
+    </head>
+    <body>
+      <nav>
+        <h1><a class="no-highlight" href="/">💍 Bell Admin</a></h1>
+        <div class="tab">
+          <a href="/">Jobs</a>
+          <a href="/peers">Peers</a>
+        </div>
+      </nav>
+      <main>{{ template "content" . }}</main>
+    </body>
+  </html>
+{{ end }}

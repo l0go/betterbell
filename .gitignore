@@ -1,3 +1,4 @@
 *.db
 ./betterbell
 .DS_STORE
+node_modules
