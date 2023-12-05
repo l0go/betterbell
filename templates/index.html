@@ -6,7 +6,7 @@
   <div class="list">
     {{ range $key, $value := . }}
       <div class="job {{ if not $value.Enabled }}job-disabled{{ end }}">
-        <p>{{ $value.Title }}{{ if not $value.Enabled }}(disabled){{ end }}</p>
+        <p>{{ $value.Title }}{{ if not $value.Enabled }} (disabled){{ end }}</p>
         <form method="POST">
           <label for="text">Action:</label>
           <select name="action">

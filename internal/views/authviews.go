@@ -82,6 +82,24 @@ func (v AuthViews) GetLogin(w http.ResponseWriter, r *http.Request) {
 // Register page reachable at /register
 // Allows you to login to access the rest of the service
 func (v AuthViews) GetRegister(w http.ResponseWriter, r *http.Request) {
+	// If we have less than one user, we don't need an existing account to create another one
+	// If there is no existing users, then anyone can create an account
+	rows, err := v.State.DB.Query("SELECT * FROM Users;")
+	if err != nil {
+		log.Println(err)
+	}
+
+	count := 0
+	for rows.Next() {
+		count += 1
+	}
+	rows.Close()
+
+	if count > 0 {
+		// Check if we have permission
+		v.CheckPermission(w, r)
+	}
+
 	if r.Method == http.MethodPost {
 		username := r.FormValue("username")
 		password := r.FormValue("password")
@@ -97,7 +115,6 @@ func (v AuthViews) GetRegister(w http.ResponseWriter, r *http.Request) {
 
 		if status == internal.RegisterSuccess {
 			// Account exists and the password is valid
-			log.Println(internal.FormatRegisterStatus(status))
 			http.Redirect(w, r, "/login", http.StatusSeeOther)
 		} else {
 			// Account is not valid

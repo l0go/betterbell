@@ -68,6 +68,7 @@ func (p PeerState) Secret() (string, error) {
 		}
 		break
 	}
+	rows.Close()
 
 	return peer.Secret, nil
 }
