@@ -89,6 +89,30 @@ nav,
   background-color: var(--button-color-active);
 }
 
+.tab {
+  overflow: hidden;
+  background-color: var(--button-color-1);
+}
+
+.tab a {
+  color: white;
+  text-decoration: none;
+  background-color: inherit;
+  float: left;
+  border-right: 5px solid var(--button-color-active);
+  outline: none;
+  cursor: pointer;
+  padding: 14px 16px;
+}
+
+.tab a:hover {
+  background-color: var(--button-color-hover);
+}
+
+.tab a:active {
+  background-color: var(--button-color-active);
+}
+
 blockquote {
   margin: 0;
   padding: 12px;

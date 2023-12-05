@@ -2,7 +2,8 @@
 <blockquote>
   <p>
     This will allow you to add other instances that will ring at the same
-    intervals as this one. The secret key is <span class="secret">Boots</span>
+    intervals as this one. The secret key is
+    <span class="secret">{{ .Secret }}</span>
   </p>
 </blockquote>
 
@@ -16,10 +17,12 @@
 </form>
 
 <div class="list">
-  {{ range $key, $value := . }}
+  {{ range $key, $value := .Get }}
   <div class="job">
     <p>{{ $value.Endpoint }}</p>
-    <a href="/peers/remove?id={{ $value.ID }}" class="button-basic">Delete Peer</a>
+    <a href="/peers/remove?id={{ $value.ID }}" class="button-basic"
+      >Delete Peer</a
+    >
   </div>
   {{end}}
 </div>

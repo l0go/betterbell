@@ -11,7 +11,7 @@
         <option value="" disabled selected>Select an action</option>
         <option value="ring-{{ $value.ID }}">Ring</option>
         <option value="delete-{{ $value.ID }}">Delete Job</option>
-        {{ if $value.Enabled  }}
+        {{ if $value.Enabled }}
         <option value="toggle-{{ $value.ID }}">Disable Job</option>
         {{ else }}
         <option value="toggle-{{ $value.ID }}">Enable Job</option>

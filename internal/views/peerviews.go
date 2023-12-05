@@ -42,7 +42,7 @@ func (v PeerViews) GetPeers(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	v.ListTemplate.ExecuteTemplate(w, "base", v.State.Get())
+	v.ListTemplate.ExecuteTemplate(w, "base", v.State)
 }
 
 // An endpoint that removes a peer. Reachable at /peers/remove/?id=<peer-id>

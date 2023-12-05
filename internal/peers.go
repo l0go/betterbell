@@ -55,23 +55,24 @@ func (p PeerState) Remove(id int) error {
 	return err
 }
 
-func (p PeerState) Check(secret string) (bool, error) {
+func (p PeerState) Secret() (string, error) {
 	rows, err := p.DB.Query("SELECT secret FROM Peers WHERE endpoint='THIS';")
 	if err != nil {
-		return false, err
+		return "", err
 	}
 
 	var peer Peer
 	for rows.Next() {
 		if err := rows.Scan(&peer.Secret); err != nil {
-			return false, err
+			return "", err
 		}
 		break
 	}
 
-	if peer.Secret == secret {
-		return true, nil
-	}
+	return peer.Secret, nil
+}
 
-	return false, nil
+func (p PeerState) Check(secret string) (bool, error) {
+	instanceSecret, err := p.Secret()
+	return instanceSecret == secret, err
 }
