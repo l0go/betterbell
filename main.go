@@ -11,7 +11,7 @@ import (
 	"log"
 	"net/http"
 
-	_ "github.com/glebarez/go-sqlite"
+	_ "github.com/mattn/go-sqlite3"
 )
 
 func main() {
@@ -28,7 +28,7 @@ func main() {
 	}
 
 	// Connect to the database
-	db, err := sql.Open("sqlite", dbLocation)
+	db, err := sql.Open("sqlite3", dbLocation)
 	if err != nil {
 		log.Fatal(err)
 	}
