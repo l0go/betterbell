@@ -2,15 +2,16 @@ package internal
 
 import (
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"net/url"
 	"os"
 	"time"
 
-	"github.com/gen2brain/malgo"
-	mp3 "github.com/hajimehoshi/go-mp3"
+	
+	"github.com/gopxl/beep/v2"
+	"github.com/gopxl/beep/v2/mp3"
+	"github.com/gopxl/beep/v2/speaker"
 )
 
 func Ring(id int, peers *PeerState) error {
@@ -22,45 +23,19 @@ func Ring(id int, peers *PeerState) error {
 	}
 	defer f.Close()
 
-	dec, err := mp3.NewDecoder(f)
+	
+	streamer, format, err := mp3.Decode(f)
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
+	defer streamer.Close()
 
-	// Initialize malgo
-	ctx, err := malgo.InitContext(nil, malgo.ContextConfig{}, nil)
-	if err != nil {
-		return err
-	}
-	defer func() {
-		_ = ctx.Uninit()
-		ctx.Free()
-	}()
+	speaker.Init(format.SampleRate, format.SampleRate.N(time.Second/10))
 
-	deviceConfig := malgo.DefaultDeviceConfig(malgo.Playback)
-	deviceConfig.Playback.Format = malgo.FormatS16
-	deviceConfig.Playback.Channels = 2
-	deviceConfig.SampleRate = uint32(dec.SampleRate())
-	deviceConfig.Alsa.NoMMap = 1
-
-	onSamples := func(pOutputSample, pInputSamples []byte, framecount uint32) {
-		io.ReadFull(dec, pOutputSample)
-	}
-
-	deviceCallbacks := malgo.DeviceCallbacks{
-		Data: onSamples,
-	}
-
-	device, err := malgo.InitDevice(ctx.Context, deviceConfig, deviceCallbacks)
-	if err != nil {
-		return err
-	}
-	defer device.Uninit()
-
-	err = device.Start()
-	if err != nil {
-		return err
-	}
+	done := make(chan bool)
+	speaker.Play(beep.Seq(streamer, beep.Callback(func() {
+		done <- true
+	})))
 
 	go func() error {
 		for _, peer := range peers.Get() {
@@ -77,8 +52,7 @@ func Ring(id int, peers *PeerState) error {
 		return nil
 	}()
 
-	// TODO: Make this less hardcoded
-	time.Sleep(4 * time.Second)
+	<-done
 
 	return nil
 }
