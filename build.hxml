@@ -1,0 +1,15 @@
+-cp src/
+--resource assets/bell.mp3@bell_mp3
+
+-L genkit_miniaudio
+-L logging
+-L hxWebSockets
+-L db-core
+-L db-sqlite
+-L sqlite3
+-L crypto
+-L libcron
+
+-w -WDeprecated
+--main Main
+--cpp out/

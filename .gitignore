@@ -1,4 +1,22 @@
-*.db
-./betterbell
-.DS_STORE
+# Output
+out/
 node_modules
+.output
+.vercel
+/.svelte-kit
+/build
+
+# OS
+.DS_Store
+*.db
+
+# Env
+.env
+.env.*
+!.env.example
+!.env.test
+.haxelib
+
+# Vite
+vite.config.js.timestamp-*
+vite.config.ts.timestamp-*
