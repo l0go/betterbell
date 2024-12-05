@@ -1,0 +1,52 @@
+@import "@fontsource/cantarell";
+@import "modern-normalize";
+
+:root {
+	--bg: #fafafa;
+	--fg: #242424;
+	--header: #ebebeb;
+	--header-shadow: rgb(0 0 0 / 12%);
+	--header-border: rgb(0 0 0 / 80%);
+	--accent-bg: #3584e4;
+	--accent-bg-hover: color-mix(in srgb, var(--accent-bg) 80%, transparent);	
+	--trough-color: color-mix(in srgb, var(--fg) 15%, transparent);
+	--font-body: "Cantarell", sans-serif;
+}
+
+body {
+	margin: 0;
+	height: 100%;
+	padding: 0;
+	color: var(--fg);
+	background-color: var(--bg);
+	font-family: var(--font-body);
+	font-size: 11pt;
+}
+
+.button {
+	display: flex;
+	border: none;
+	color: var(--fg);
+	text-decoration: none;
+	align-items: center; 
+	justify-content: center;
+	min-width: 32px;
+	min-height: 32px;
+    padding: 5px;
+	border-radius: 6px;
+	transition: 200ms ease-out;
+}
+
+.button:hover {
+	background-color: color-mix(in srgb, var(--fg) 7%, transparent);
+}
+
+.button[aria-current='page'] {
+	background-color: color-mix(in srgb, var(--fg) 10%, transparent);
+}
+
+.title {
+	margin: 0;
+	font-weight: 700;
+	font-size: 11pt;
+}
