@@ -9,7 +9,7 @@
 	};
 </script>
 
-<button aria-pressed={toggled} onclick={toggleIsPressed}>
+<button aria-label={toggled ? "On" : "Off"} aria-pressed={toggled} onclick={toggleIsPressed}>
 	<span class="slider"></span>
 </button>
 

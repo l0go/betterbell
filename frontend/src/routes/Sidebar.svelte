@@ -7,7 +7,7 @@
 
 <nav>
 	<div class="sidebar-top">
-		<a class="button toggle-sidebar"><img src={menu_large} width="14px" alt="Open Sidebar" /></a>
+		<button class="button toggle-sidebar"><img src={menu_large} width="14px" alt="Open Sidebar" /></button>
 		<p class="title">Betterbell</p>
 	</div>
 	<div class="sidebar-content">

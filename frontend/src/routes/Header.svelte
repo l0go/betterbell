@@ -11,13 +11,12 @@
 
 <header>
 	{#if closeButton}
-		<div />
-	{/if}
-	<p class="title">{pagename}</p>
-	{#if closeButton}
+		<p class="title">{pagename}</p>
 		<div id="button-box">
 			<button onclick={onclose} id="close-button"><img src={cross_small} alt="x" /></button>
 		</div>
+	{:else}
+		<p class="title">{pagename}</p>
 	{/if}
 </header>
 

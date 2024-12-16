@@ -7,16 +7,17 @@
 	}
 </script>
 
-<a on:click={click}>
+<button on:click={click}>
 	<img src={plus} alt="Add" />
-</a>
+</button>
 
 <style>
-	a {
+	button {
 		display: flex;
 		justify-content: center;
 		align-items: center;
 
+		border: none;
 		border-radius: 48px;
 		font-size: 24pt;
 		line-height: 0;
@@ -33,10 +34,10 @@
 		width: 48px;
 		height: 48px;
 	}
-	a:hover {
+	button:hover {
 		background-color: var(--accent-bg-hover);
 	}
-	a img {
+	button img {
 		width: 24px;
 		filter: brightness(0) invert(1);
 	}
