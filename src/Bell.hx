@@ -1,11 +1,13 @@
 package;
 
+import haxe.io.Bytes;
 import libcron.Scheduler;
 import Miniaudio;
 import logging.Logger;
 
 class Bell {
 	public static var instance: Bell;
+	var bellSound: Bytes;
 	var log: Logger;
 	var cron: libcron.Scheduler = new libcron.Scheduler();
 	var dataPointer: cpp.Star<cpp.UInt8>;
@@ -18,11 +20,11 @@ class Bell {
 		this.cron = new Scheduler();
 
 		// Decode the bell mp3
-		final bell = haxe.Resource.getBytes("bell_mp3");
-		this.dataPointer = cpp.Pointer.arrayElem(bell.getData(), 0).ptr;
+		bellSound = haxe.Resource.getBytes("bell_mp3");
+		this.dataPointer = cpp.Pointer.arrayElem(bellSound.getData(), 0).ptr;
 		this.decoder = Miniaudio.MaDecoder.create();
 		final config = Miniaudio.ma_decoder_config_init_default();
-		final result = Miniaudio.ma_decoder_init_memory(cast dataPointer, bell.length, config, decoder);
+		final result = Miniaudio.ma_decoder_init_memory(cast dataPointer, bellSound.length, config, decoder);
 		if (result != MaResult.MA_SUCCESS) {
 			trace("Failed to decode audio");
 			return;
@@ -60,8 +62,11 @@ class Bell {
 		instance.ring();
 	}
 
-	public static function schedule(cron: String) {
-		trace(cron);
-		trace(instance.cron.addSchedule(cpp.StdString.ofString("Bell"), cpp.StdString.ofString(cron), cpp.Callable.fromStaticFunction(instanceRing)));
+	public static function schedule(cron: String, id: Int) {
+		instance.cron.addSchedule(cpp.StdString.ofString('$id'), cpp.StdString.ofString(cron), cpp.Callable.fromStaticFunction(instanceRing));
+	}
+
+	public static function unschedule(id: Int) {
+		instance.cron.removeSchedule(cpp.StdString.ofString('$id'));
 	}
 }

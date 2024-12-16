@@ -1,20 +1,64 @@
 <script>
-import Switch from "../Switch.svelte";
-import right from "$lib/icons/right-smaller-symbolic.svg";
-let { title = "Job Name", toggled = false } = $props();
+	import Switch from "../Switch.svelte";
+	import right from "$lib/icons/right-smaller-symbolic.svg";
+	import { deleteJob, toggleJob, updateJob, websocketState } from "$lib/websocket-bridge.svelte";
+	import Modal from "../Modal.svelte";
+	import SvelteCronGen from "../vendor/Cron.svelte";
+	import toast from "svelte-hot-french-toast";
+
+	let { title = "Job Name", toggled = false, id = 0 } = $props();
+	let showModal = $state(false);
+	let expression = $state(websocketState.jobs.get(id).expression);
+
+	function onToggled() {
+		toggleJob(id, toggled);
+	}
+
+	function onPress() {
+		showModal = true;
+	}
+
+	function onUpdateJob() {
+		updateJob(id, expression);
+		showModal = false;
+		toast.success("Updated job");
+	}
+
+	function onDeleteJob() {
+		deleteJob(id);
+		showModal = false;
+		toast.success("Deleted job");
+	}
 </script>
 
-<li class="job">
+<button class="job" onclick={onPress}>
 	<p class="title">{title}</p>
 	<div>
-		<Switch toggled={toggled} />
+		<Switch bind:toggled {onToggled} />
 		<img src={right} alt="Right arrow" />
 	</div>
-</li>
+</button>
+
+<Modal bind:showModal>
+	<SvelteCronGen
+		bind:value={expression}
+		bind:valueTranslated={title}
+		language="en"
+		showSeconds={true}
+		showAdvanced={false}
+		minutesStep={1}
+	/>
+	<div style="display: flex;">
+		<button onclick={onDeleteJob} class="button-lg button">Delete Job</button>
+		<button onclick={onUpdateJob} class="button-lg button-accent button">Update Job</button>
+	</div>
+</Modal>
 
 <style>
 	.job {
 		display: flex;
+		width: 100%;
+		border: none;
 		justify-content: space-between;
 		align-items: center;
 		background-color: var(--bg);

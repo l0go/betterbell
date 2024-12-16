@@ -1,27 +1,30 @@
 <script>
 	import Header from "./Header.svelte";
-	import { stopPropagation } from 'svelte/legacy';
 	let { children, showModal = $bindable(false) } = $props();
+
+	/** @type {HTMLDialogElement} */
 	let dialog;
 	$effect(() => {
-		if (showModal) dialog.showModal(); else dialog.close();
+		if (showModal) dialog.showModal();
+		else dialog.close();
 	});
+
+	/** @param {MouseEvent} e */
+	function onContentClick(e) {
+		e.stopPropagation();
+	}
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events a11y-no-noninteractive-element-interactions -->
-<dialog
-	bind:this={dialog}
-	onclose={() => (showModal = false)}
-	onclick={() => dialog.close()}
->
-	<!-- svelte-ignore a11y-no-static-element-interactions -->
-	<div onclick="{stopPropagation()}">
-		<Header closeButton="{true}" onclose={() => dialog.close()} />
-		<div class="modal-content" onclick="{stopPropagation()}">
-			{@render children()}
+<div role="presentation" onclick={() => dialog.close()}>
+	<dialog bind:this={dialog} onclose={() => (showModal = false)}>
+		<div onclick={onContentClick} role="presentation">
+			<Header closeButton={true} onclose={() => dialog.close()} />
+			<div class="modal-content" onclick={onContentClick} role="presentation">
+				{@render children()}
+			</div>
 		</div>
-	</div>
-</dialog>
+	</dialog>
+</div>
 
 <style>
 	dialog {
@@ -59,8 +62,5 @@
 		to {
 			opacity: 1;
 		}
-	}
-	button {
-		display: block;
 	}
 </style>

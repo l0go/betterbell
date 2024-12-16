@@ -1,8 +1,8 @@
 <script>
-import { page } from "$app/stores";
-import menu_large from "$lib/icons/menu-large-symbolic.svg";
-import bell_outline from "$lib/icons/bell-outline-symbolic.svg";
-import chain_link from "$lib/icons/chain-link-symbolic.svg";
+	import { page } from "$app/stores";
+	import menu_large from "$lib/icons/menu-large-symbolic.svg";
+	import bell_outline from "$lib/icons/bell-outline-symbolic.svg";
+	import chain_link from "$lib/icons/chain-link-symbolic.svg";
 </script>
 
 <nav>
@@ -11,11 +11,11 @@ import chain_link from "$lib/icons/chain-link-symbolic.svg";
 		<p class="title">Betterbell</p>
 	</div>
 	<div class="sidebar-content">
-		<a class="button" aria-current={$page.url.pathname === '/jobs' ? 'page' : undefined} href="/jobs">
+		<a class="button" aria-current={$page.url.pathname === "/jobs" ? "page" : undefined} href="/jobs">
 			<img src={bell_outline} alt="Bell icon" />
 			Jobs
 		</a>
-		<a class="button" aria-current={$page.url.pathname === '/peers' ? 'page' : undefined} href="/peers">
+		<a class="button" aria-current={$page.url.pathname === "/peers" ? "page" : undefined} href="/peers">
 			<img src={chain_link} alt="Chain icon" />
 			Peers
 		</a>
@@ -56,8 +56,9 @@ import chain_link from "$lib/icons/chain-link-symbolic.svg";
 		grid-template-columns: 32px 1fr 32px;
 		min-height: 47px;
 		padding: 6px 7px 7px 7px;
-		box-shadow: 0 1px color-mix(in srgb, var(--header-shadow) 50%, transparent),
-                0 2px 4px color-mix(in srgb, var(--header-shadow) 50%, transparent);
+		box-shadow:
+			0 1px color-mix(in srgb, var(--header-shadow) 50%, transparent),
+			0 2px 4px color-mix(in srgb, var(--header-shadow) 50%, transparent);
 	}
 	.sidebar-top .title {
 		display: flex;

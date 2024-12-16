@@ -1,5 +1,6 @@
 package;
 
+import promises.Promise;
 import db.RecordSet;
 import haxe.crypto.SCrypt;
 import haxe.crypto.BCrypt;
@@ -20,22 +21,30 @@ class DB {
 		});	
 
 		db.connect().then(result -> {
-			return result.database.createTable("jobs", [
+			return result.database.createTable("Jobs", [
 				{name: "ID", type: Number, options: [PrimaryKey, NotNull, AutoIncrement]},
 				{name: "CronJob", type: Text(50), options: [NotNull]},
+				{name: "Toggled", type: Boolean, options: [NotNull]},
 			]);
 		}).then(result -> {
-			return result.database.createTable("users", [
+			return result.database.createTable("Users", [
 				{name: "ID", type: Text(254), options: [PrimaryKey, NotNull]},
 				{name: "Hash", type: Text(254), options: [NotNull]},
 				{name: "Salt", type: Text(24), options: [NotNull]},
 			]);
+		}).then(result -> {
+			return result.database.createTable("Sessions", [
+				{name: "Token", type: Text(36), options: [PrimaryKey, NotNull]},
+				{name: "User", type: Text(254), options: [NotNull]},
+			]);
+		}).then(_ -> {
+			db.defineTableRelationship("Sessions.User", "Users.ID");
 		});
 	}
 	
 	public function all(table: String): promises.Promise<RecordSet> {
 		return new promises.Promise((resolve, reject) -> {
-			db.table("jobs").then(result -> {
+			db.table("Jobs").then(result -> {
 				return result.table.all();
 			}).then(result -> {
 				resolve(result.data);
@@ -47,7 +56,7 @@ class DB {
 
 	public function addUser(id: String, password: String): promises.Promise<Null<String>> {
 		return new promises.Promise((resolve, reject) -> {
-			db.table("users").then(result -> {
+			db.table("Users").then(result -> {
 				final h = hashPassword(password);
 				final record = new Record();
 				record.field("ID", id);
@@ -62,22 +71,25 @@ class DB {
 		});
 	}
 
-	public function addJob(cron: String): promises.Promise<Null<String>> {
+	public function addJob(cron: String, ?update: Bool, ?id: Int): promises.Promise<Null<String>> {
 		return new promises.Promise((resolve, reject) -> {
-			db.table("jobs").then(result -> {
+			db.table("Jobs").then(result -> {
 				final record = new Record();
+				if (id != null) {
+					record.field("ID", id);
+				}
 				record.field("CronJob", cron);
+				record.field("Toggled", true);
+				if (update) {
+					Bell.unschedule(id);
+					return result.table.update(query($ID = id), record);
+				}
 				return result.table.add(record);
-			}).then(_ -> {
-				return instance.all("jobs");
+			}).then(r -> {
+				Bell.schedule(cron, r.data.field("ID"));
+				return instance.all("Jobs");
 			}).then(result -> {
-				var jbs = [for (job in result) job.field("CronJob")];
-				Main.server.sendAll(haxe.Json.stringify({
-					status: Routes.Status.SUCCESS,
-					action: Routes.Commands.UPDATE_JOBS,
-					jobs: jbs,
-				}));
-				Bell.schedule('$cron');
+				sendUpdateJobs(result);
 				resolve(null);
 			}, e -> {
 				reject(e.message);
@@ -85,9 +97,46 @@ class DB {
 		});
 	}
 
+	public function deleteJob(id: Int) {
+		return db.table("Jobs").then(result ->{
+			Bell.unschedule(id);
+			result.table.deleteAll(query($ID = id));
+			return instance.all("Jobs");
+		}).then(result -> {
+			sendUpdateJobs(result);
+		});
+	}
+
+	public function setJobToggled(id: Int, bool: Bool) {
+		return db.table("Jobs").then(result -> {
+			return result.table.findOne(query($ID = id));
+		}).then(result -> {
+			var record = new Record();
+			record.field("Toggled", bool);
+			Bell.unschedule(id);
+			if (bool) {
+				Bell.schedule(result.data.field("CronJob"), id);
+			}
+			return result.table.update(query($ID = id), record);
+		});
+	}
+
+	function sendUpdateJobs(result: RecordSet) {
+		final jbs = [for (job in result) {
+			id: job.field("ID"),
+			expression: job.field("CronJob"),
+			toggled: job.field("Toggled") == 1,
+		}];
+		Main.server.sendAll(haxe.Json.stringify({
+			status: Routes.Status.SUCCESS,
+			action: Routes.Commands.UPDATE_JOBS,
+			jobs: jbs,
+		}));
+	}
+
 	public function validCredentials(id: String, password: String): promises.Promise<Bool> {
 		return new promises.Promise((resolve, reject) -> {
-			db.table("users").then(result -> {
+			db.table("Users").then(result -> {
 				return result.table.findOne(query($ID = id));
 			}).then(result -> {
 				if (result?.data == null) {
@@ -101,6 +150,30 @@ class DB {
 				}
 			}, _ -> {
 				reject(false);
+			});
+		});
+	}
+
+	public function enrollSession(id: String): Promise<String> {
+		final uuid = hx.ws.Util.generateUUID();
+		return new promises.Promise((resolve, reject) -> {
+			db.table("Sessions").then(result -> {
+				var record = new Record();
+				record.field("Token", uuid);
+				record.field("User", id);
+				return result.table.add(record);
+			}).then(_ -> {
+				resolve(uuid);
+			});
+		});
+	}
+
+	public function validSession(id: String, token: String): Promise<Bool> {
+		return new promises.Promise((resolve, reject) -> {
+			db.table("Sessions").then(result -> {
+				return result.table.findOne(query($User = id && $Token = token));
+			}).then(result -> {
+				resolve(result.data != null);
 			});
 		});
 	}

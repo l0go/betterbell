@@ -1,16 +1,26 @@
-<svelte:options runes="{true}" />
+<svelte:options runes={true} />
 
 <script>
-import Header from "./Header.svelte";
-import Sidebar from "./Sidebar.svelte";
-import "../app.css";
-import {Toaster} from 'svelte-hot-french-toast'
-let { children } = $props();
+	import Header from "./Header.svelte";
+	import Sidebar from "./Sidebar.svelte";
+	import "../app.css";
+	import toast, { Toaster } from "svelte-hot-french-toast";
+	import { connect, websocketState } from "$lib/websocket-bridge.svelte";
+	import { goto } from "$app/navigation";
+	import { browser } from "$app/environment";
+	let { children } = $props();
+
+	connect();
+	if (browser && !websocketState.authenticated) {
+		goto("/login");
+	}
 </script>
 
 <div class="app">
 	<main>
-		<Sidebar />
+		{#if websocketState.authenticated}
+			<Sidebar />
+		{/if}
 		<div class="right">
 			<Header />
 			<div class="content">
@@ -18,7 +28,7 @@ let { children } = $props();
 			</div>
 		</div>
 	</main>
-	<Toaster style="position:relative; z-index: 100000000;"/>
+	<Toaster style="position:relative; z-index: 100000000;" />
 </div>
 
 <style>

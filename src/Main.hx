@@ -1,5 +1,6 @@
 package;
 
+import haxe.Timer;
 import logging.Logger;
 import logging.LogManager;
 import hx.ws.Log;
@@ -24,13 +25,21 @@ class Main {
 			trace(e);
 		});
 
+		// Reschedule all jobs
 		DB.instance.all("jobs").then(result -> {
 			for (job in result) {
-				Bell.schedule(job.field("CronJob"));
+				if (job.field("Toggled")) {
+					Bell.schedule(job.field("CronJob"), job.field("ID"));
+				}
 			}
 		});
-        server = new WebSocketServer<Routes>("localhost", 1928, 10);
 
+		// Setup websocket server
+        server = new WebSocketServer<Routes>("localhost", 1928, 10);
+		var timer = new Timer(5 * 1000);
+		timer.run = () -> {
+			server.sendAll("Ack");
+		};
 
 		log.info("Websocket server up");
 		server.start();

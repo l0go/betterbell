@@ -1,22 +1,22 @@
 <script>
-import { page } from "$app/stores";
-import cross_small from "$lib/icons/cross-small-symbolic.svg"; 
-let n = $derived($page?.url?.pathname);
-let pagename = $state("");
-$effect(() => {
-	pagename = $page?.url?.pathname?.charAt(1).toUpperCase() + $page?.url?.pathname?.slice(2);
-});
-let { closeButton = false, onclose} = $props();
+	import { page } from "$app/stores";
+	import cross_small from "$lib/icons/cross-small-symbolic.svg";
+	let n = $derived($page?.url?.pathname);
+	let pagename = $state("");
+	$effect(() => {
+		pagename = $page?.url?.pathname?.charAt(1).toUpperCase() + $page?.url?.pathname?.slice(2);
+	});
+	let { closeButton = false, onclose = () => {} } = $props();
 </script>
 
 <header>
 	{#if closeButton}
-	<div />
+		<div />
 	{/if}
 	<p class="title">{pagename}</p>
 	{#if closeButton}
 		<div id="button-box">
-			<button onclick="{onclose}" id="close-button"><img src={cross_small} alt="x" /></button>
+			<button onclick={onclose} id="close-button"><img src={cross_small} alt="x" /></button>
 		</div>
 	{/if}
 </header>
@@ -26,12 +26,13 @@ let { closeButton = false, onclose} = $props();
 		display: flex;
 		position: relative;
 		width: 100%;
-		align-items: center; 
+		align-items: center;
 		min-height: 47px;
 		padding: 6px 7px 7px 7px;
 		background-color: var(--bg);
-		box-shadow: 0 1px color-mix(in srgb, var(--header-shadow) 50%, transparent),
-                0 2px 4px color-mix(in srgb, var(--header-shadow) 50%, transparent);
+		box-shadow:
+			0 1px color-mix(in srgb, var(--header-shadow) 50%, transparent),
+			0 2px 4px color-mix(in srgb, var(--header-shadow) 50%, transparent);
 	}
 	header > * {
 		flex: 1;
@@ -46,7 +47,7 @@ let { closeButton = false, onclose} = $props();
 	#close-button {
 		border: none;
 		display: grid;
-  align-items: center;
+		align-items: center;
 		border-radius: 30px;
 		width: 24px;
 		height: 24px;

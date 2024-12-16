@@ -8,7 +8,7 @@
 	--header-shadow: rgb(0 0 0 / 12%);
 	--header-border: rgb(0 0 0 / 80%);
 	--accent-bg: #3584e4;
-	--accent-bg-hover: color-mix(in srgb, var(--accent-bg) 80%, transparent);	
+	--accent-bg-hover: color-mix(in srgb, var(--accent-bg) 80%, transparent);
 	--trough-color: color-mix(in srgb, var(--fg) 15%, transparent);
 	--font-body: "Cantarell", sans-serif;
 }
@@ -28,11 +28,11 @@ body {
 	border: none;
 	color: var(--fg);
 	text-decoration: none;
-	align-items: center; 
+	align-items: center;
 	justify-content: center;
 	min-width: 32px;
 	min-height: 32px;
-    padding: 5px;
+	padding: 5px;
 	border-radius: 6px;
 	transition: 200ms ease-out;
 }
@@ -41,8 +41,25 @@ body {
 	background-color: color-mix(in srgb, var(--fg) 7%, transparent);
 }
 
-.button[aria-current='page'] {
+.button[aria-current="page"] {
 	background-color: color-mix(in srgb, var(--fg) 10%, transparent);
+}
+
+.button-lg {
+	padding: 10px;
+	width: 100%;
+}
+
+.button:disabled {
+	background-color: var(--trough-color);
+}
+
+.button-accent {
+	background-color: var(--accent-bg);
+	color: var(--bg);
+}
+.button-accent:hover {
+	background-color: var(--accent-bg-hover);
 }
 
 .title {

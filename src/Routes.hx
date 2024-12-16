@@ -9,28 +9,47 @@ import logging.Logger;
 using StringTools;
 
 enum abstract Commands(String) to String {
-	var UPDATE_JOBS;
-	var CREATE_JOB;
-	var IS_AUTHENTICATED;
-	var LOGIN_STANDARD;
+	final UPDATE_JOBS;
+	final CREATE_JOB;
+	final UPDATE_JOB;
+	final TOGGLE_JOB;
+	final DELETE_JOB;
+	final IS_AUTHENTICATED;
+	final LOGIN_STANDARD;
+	final LOGIN_TOKEN;
 }
 
 enum abstract Status(String) to String {
-	var SUCCESS;
-	var FAILURE;
+	final SUCCESS;
+	final FAILURE;
 }
 
 class Routes extends WebSocketHandler {
 	static final log: Logger = new Logger(Routes);
-	var authenticated = false;
+	public var authenticated = false;
+	public var token: String;
+
+	final commandRoutes: Map<Commands, Command> = [
+		CREATE_JOB => new commands.CreateJob(),
+		UPDATE_JOB => new commands.UpdateJob(),
+		TOGGLE_JOB => new commands.ToggleJob(),
+		DELETE_JOB => new commands.DeleteJob(),
+		IS_AUTHENTICATED => new commands.IsAuthenticated(),
+		LOGIN_STANDARD => new commands.LoginStandard(),
+		LOGIN_TOKEN => new commands.LoginToken(),
+	];
 
 	public function new(s: SocketImpl) {
 		super(s);
 
 		onopen = () -> {
-            trace(id + ". OPEN");
+            log.info(id + ". OPEN");
 			DB.instance.all("jobs").then(result -> {
-				var jbs = [for (job in result) job.field("CronJob")];
+				var jbs = [for (job in result) {
+					id: job.field("ID"),
+					expression: job.field("CronJob"),
+					toggled: job.field("Toggled") == 1,
+				}];
 				send(Json.stringify({
 					status: Status.SUCCESS,
 					action: Commands.UPDATE_JOBS,
@@ -46,70 +65,25 @@ class Routes extends WebSocketHandler {
 		onmessage = (message: MessageType) -> try {
 			switch (message) {
 				case StrMessage(content):
-					var json = haxe.Json.parse(content);
-					switch (json.action) {
-						case Commands.LOGIN_STANDARD:
-							// Check for needed fields
-							if (json.username == null || json.password == null) {
-								send(Json.stringify({
-									status: Status.FAILURE,
-									action: Commands.LOGIN_STANDARD,
-									message: "Username or password is null",
-								}));
-								return;
-							}
-							DB.instance.validCredentials(json.username, json.password).then(_ -> {
-								authenticated = true;
-								send(Json.stringify({
-									status: Status.SUCCESS,
-									action: Commands.LOGIN_STANDARD,
-									message: "Authenticated",
-								}));
-							}, e -> {
-								send(Json.stringify({
-									status: Status.FAILURE,
-									action: Commands.LOGIN_STANDARD,
-									message: "Invalid Credentials",
-								}));
-							});
-						case IS_AUTHENTICATED:
-							send(Json.stringify({
-								status: Status.SUCCESS,
-								action: Commands.IS_AUTHENTICATED,
-								message: '$authenticated',
-							}));
-						case CREATE_JOB:
-							//if (!authenticated) {
-							//	send(Json.stringify({
-							//		status: Status.FAILURE,
-							//		action: Commands.CREATE_JOB,
-							//		message: "Must be authenticated",
-							//	}));
-							//	return;
-							//}
-
-							if (json.job == null) {
-								send(Json.stringify({
-									status: Status.FAILURE,
-									action: Commands.CREATE_JOB,
-									message: "Job is null",
-								}));
-								return;
-							}
-
-							DB.instance.addJob(json.job).then(null, e -> {
-								send(Json.stringify({
-									status: Status.FAILURE,
-									action: Commands.CREATE_JOB,
-									message: "Could not add job to database"
-								}));
-							});
-						default:
-							send(Json.stringify({
-								status: Status.FAILURE,
-								message: "Undefined action",
-							}));
+					final json = haxe.Json.parse(content);
+					if (!commandRoutes.exists(json.action)) {
+						send(Json.stringify({
+							status: Status.FAILURE,
+							message: "Undefined action",
+						}));
+						return;
 					}
+					
+					if (commandRoutes[json.action].requiresAuthentication && !authenticated) {
+						send(haxe.Json.stringify({
+							status: Routes.Status.FAILURE,
+							action: commandRoutes[json.action],
+							message: "Must be authenticated",
+						}));
+						return;
+					}
+
+					commandRoutes[json.action].run(this, json);
 				default:
 					send("Message must be a string");
 			}
@@ -122,7 +96,7 @@ class Routes extends WebSocketHandler {
 		};
 
         onerror = (error) -> {
-            trace(id + ". ERROR: " + error);
+            log.error('$id: $error');
         };
 	}
 }
