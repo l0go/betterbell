@@ -3,6 +3,7 @@
 	import menu_large from "$lib/icons/menu-large-symbolic.svg";
 	import bell_outline from "$lib/icons/bell-outline-symbolic.svg";
 	import chain_link from "$lib/icons/chain-link-symbolic.svg";
+	import bullhorn from "$lib/icons/bullhorn-symbolic.svg";
 </script>
 
 <nav>
@@ -18,6 +19,10 @@
 		<a class="button" aria-current={$page.url.pathname === "/peers" ? "page" : undefined} href="/peers">
 			<img src={chain_link} alt="Chain icon" />
 			Peers
+		</a>
+		<a class="button" aria-current={$page.url.pathname === "/ring" ? "page" : undefined} href="/ring">
+			<img src={bullhorn} alt="Chain icon" />
+			Ring
 		</a>
 	</div>
 </nav>

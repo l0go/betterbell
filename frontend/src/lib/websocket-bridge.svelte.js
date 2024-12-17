@@ -2,7 +2,7 @@ import { browser } from "$app/environment";
 import { toString } from "cronstrue";
 import toast from "svelte-hot-french-toast";
 import { SvelteMap } from "svelte/reactivity";
-import Cookies from 'js-cookie';
+import Cookies from "js-cookie";
 
 export const websocketState = $state({
 	authenticated: false,
@@ -23,11 +23,13 @@ export function connect() {
 			const username = Cookies.get("username");
 			const token = Cookies.get("token");
 			if (username != undefined && token != undefined) {
-				ws.send(JSON.stringify({
-					action: "LOGIN_TOKEN",
-					username: username,
-					token: token,
-				}));
+				ws.send(
+					JSON.stringify({
+						action: "LOGIN_TOKEN",
+						username: username,
+						token: token,
+					}),
+				);
 			}
 		});
 
@@ -151,6 +153,12 @@ export function toggleJob(id, value) {
 			value: value,
 		}),
 	);
+}
 
-	return true;
+export function ring() {
+	ws.send(
+		JSON.stringify({
+			action: "RING",
+		}),
+	);
 }

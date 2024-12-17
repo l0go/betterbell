@@ -47,6 +47,5 @@
 		height: calc(100% - 47px);
 		padding-left: 32px;
 		padding-right: 32px;
-		padding-bottom: 16px;
 	}
 </style>

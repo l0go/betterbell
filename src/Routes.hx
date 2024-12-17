@@ -17,6 +17,7 @@ enum abstract Commands(String) to String {
 	final IS_AUTHENTICATED;
 	final LOGIN_STANDARD;
 	final LOGIN_TOKEN;
+	final RING;
 }
 
 enum abstract Status(String) to String {
@@ -37,6 +38,7 @@ class Routes extends WebSocketHandler {
 		IS_AUTHENTICATED => new commands.IsAuthenticated(),
 		LOGIN_STANDARD => new commands.LoginStandard(),
 		LOGIN_TOKEN => new commands.LoginToken(),
+		RING => new commands.Ring(),
 	];
 
 	public function new(s: SocketImpl) {
@@ -78,7 +80,7 @@ class Routes extends WebSocketHandler {
 						send(haxe.Json.stringify({
 							status: Routes.Status.FAILURE,
 							action: commandRoutes[json.action],
-							message: "Must be authenticated",
+							message: "Must be authenticated for this action",
 						}));
 						return;
 					}
