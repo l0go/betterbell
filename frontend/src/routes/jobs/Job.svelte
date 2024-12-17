@@ -77,12 +77,11 @@
 		justify-content: space-between;
 		gap: 10px;
 	}
-	:global(.job:nth-child(1)) {
+	:global(.job:first-child) {
 		border-top-left-radius: 8px;
 		border-top-right-radius: 8px;
 	}
-	:global(.job:last-child) {
-		border-bottom: none;
+	:global(.job:last-of-type) {
 		border-bottom-left-radius: 8px;
 		border-bottom-right-radius: 8px;
 	}

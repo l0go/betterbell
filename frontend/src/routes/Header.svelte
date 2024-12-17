@@ -1,7 +1,6 @@
 <script>
 	import { page } from "$app/stores";
 	import cross_small from "$lib/icons/cross-small-symbolic.svg";
-	let n = $derived($page?.url?.pathname);
 	let pagename = $state("");
 	$effect(() => {
 		pagename = $page?.url?.pathname?.charAt(1).toUpperCase() + $page?.url?.pathname?.slice(2);
@@ -11,6 +10,7 @@
 
 <header>
 	{#if closeButton}
+		<div></div>
 		<p class="title">{pagename}</p>
 		<div id="button-box">
 			<button onclick={onclose} id="close-button"><img src={cross_small} alt="x" /></button>
@@ -48,7 +48,6 @@
 		display: grid;
 		align-items: center;
 		border-radius: 30px;
-		width: 24px;
-		height: 24px;
+		padding: 6px;
 	}
 </style>

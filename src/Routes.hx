@@ -45,7 +45,7 @@ class Routes extends WebSocketHandler {
 		onopen = () -> {
             log.info(id + ". OPEN");
 			DB.instance.all("jobs").then(result -> {
-				var jbs = [for (job in result) {
+				final jbs = [for (job in result) {
 					id: job.field("ID"),
 					expression: job.field("CronJob"),
 					toggled: job.field("Toggled") == 1,
