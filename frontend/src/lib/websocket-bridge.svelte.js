@@ -146,6 +146,7 @@ export function deleteJob(id) {
  * @returns {boolean}
  */
 export function toggleJob(id, value) {
+	websocketState.jobs.set(id, {...value, toggled: value});
 	ws.send(
 		JSON.stringify({
 			action: "TOGGLE_JOB",

@@ -6,7 +6,7 @@
 	import SvelteCronGen from "../vendor/Cron.svelte";
 	import toast from "svelte-hot-french-toast";
 
-	let { title = "Job Name", toggled = false, id = 0 } = $props();
+	let { title = "Job Name", toggled = websocketState.jobs.get(id).toggled, id = 0 } = $props();
 	let showModal = $state(false);
 	let expression = $state(websocketState.jobs.get(id).expression);
 
