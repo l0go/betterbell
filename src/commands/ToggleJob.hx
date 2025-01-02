@@ -14,9 +14,21 @@ class ToggleJob implements Command {
 			return;
 		}
 		final value = (json.value : String).toLowerCase() == "true";
-		entities.Job.findById(json.id).then(r -> {
-			r.isToggled = value;
-			r.update();
+		entities.Job.findById(json.id).then(job -> {
+			if (job == null) {
+				r.send(haxe.Json.stringify({
+					status: Routes.Status.FAILURE,
+					action: Routes.Commands.TOGGLE_JOB,
+					message: "Job does not exist",
+				}));
+			}
+			job.isToggled = value;
+			if (value) {
+				Bell.schedule(job.expression, job.jobId);
+			} else {
+				Bell.unschedule(job.jobId);
+			}
+			return job.update();
 		});
 	}
 }

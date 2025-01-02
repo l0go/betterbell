@@ -18,6 +18,7 @@ class CreateJob implements Command {
 		job.expression = json.job;
 		job.isToggled = true;
 		job.add();
+		Bell.schedule(json.job, job.jobId);
 		DB.instance.broadcastUpdateJobs();
 	}
 }

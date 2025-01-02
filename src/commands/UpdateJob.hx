@@ -14,8 +14,8 @@ class UpdateJob implements Command {
 			return;
 		}
 
-		entities.Job.findById(json.id).then(j -> {
-			if (j == null) {
+		entities.Job.findById(json.id).then(job -> {
+			if (job == null) {
 				r.send(haxe.Json.stringify({
 					status: Routes.Status.FAILURE,
 					action: Routes.Commands.UPDATE_JOB,
@@ -23,8 +23,10 @@ class UpdateJob implements Command {
 				}));
 				return;
 			}
-			j.expression = json.job;
-			j.update();
+			Bell.unschedule(job.jobId);
+			job.expression = json.job;
+			job.update();
+			Bell.schedule(job.expression, job.jobId);
 			DB.instance.broadcastUpdateJobs();
 		});
 	}

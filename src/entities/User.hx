@@ -24,13 +24,13 @@ class User implements IEntity {
 		});
 	}
 
-	public static function create(username: String, password: String) {
+	public static function create(username: String, password: String): Promise<User> {
 		final user = new User();
 		final hash = User.hashPassword(password);
 		user.username = username;
 		user.hash = hash.hash;
 		user.salt = hash.salt;
-		user.add();
+		return user.add();
 	}
 
 	public static function hashPassword(password: String, ?salt: String): {hash: String, salt: String} {

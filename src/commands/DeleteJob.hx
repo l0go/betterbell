@@ -13,8 +13,16 @@ class DeleteJob implements Command {
 			}));
 			return;
 		}
-		entities.Job.findById(json.id).then(r -> {
-			r.delete();
+		entities.Job.findById(json.id).then(job -> {
+			if (job == null) {
+				r.send(haxe.Json.stringify({
+					status: Routes.Status.FAILURE,
+					action: Routes.Commands.DELETE_JOB,
+					message: "Job does not exist",
+				}));
+			}
+			Bell.unschedule(job.jobId);
+			return job.delete();
 		});
 		DB.instance.broadcastUpdateJobs();
 	}

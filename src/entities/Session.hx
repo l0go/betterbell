@@ -4,11 +4,11 @@ import entities.IEntity;
 import promises.Promise;
 
 class Session implements IEntity {
-	@:cascade(deletions) public var user: User;
+	public var user: User;
 	@:size(36) public var accessToken: String;
 
 	public static function findByCredentials(user: entities.User, accessToken: String) {
-		return find(Query.query($user == user && $accessToken = accessToken));
+		return find(Query.query($user == user.userId && $accessToken == accessToken));
 	}
 
 	public static function enroll(user: entities.User): Promise<Session> {
