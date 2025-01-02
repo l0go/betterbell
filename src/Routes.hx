@@ -45,20 +45,9 @@ class Routes extends WebSocketHandler {
 		super(s);
 
 		onopen = () -> {
-            log.info(id + ". OPEN");
-			DB.instance.all("jobs").then(result -> {
-				final jbs = [for (job in result) {
-					id: job.field("ID"),
-					expression: job.field("CronJob"),
-					toggled: job.field("Toggled") == 1,
-				}];
-				send(Json.stringify({
-					status: Status.SUCCESS,
-					action: Commands.UPDATE_JOBS,
-					jobs: jbs,
-				}));
-			});
-        };
+			log.info(id + ". OPEN");
+			DB.instance.broadcastUpdateJobs(this);
+		};
 
         onclose = () -> {
 			authenticated = false;

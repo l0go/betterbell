@@ -1,5 +1,6 @@
 package;
 
+import entities.User;
 import haxe.Timer;
 import logging.Logger;
 import logging.LogManager;
@@ -19,17 +20,15 @@ class Main {
 		Log.mask = 0;
 
 		DB.instance = new DB();
-		DB.instance.addUser("l0go", "password").then(_ -> {
-			trace("Account created");
-		}, e -> {
-			trace(e);
-		});
 
-		// Reschedule all jobs
-		DB.instance.all("jobs").then(result -> {
+
+		User.create("l0go", "password");
+
+		//// Reschedule all jobs
+		entities.Job.findAll().then(result -> {
 			for (job in result) {
-				if (job.field("Toggled")) {
-					Bell.schedule(job.field("CronJob"), job.field("ID"));
+				if (job.isToggled) {
+					Bell.schedule(job.expression, job.jobId);
 				}
 			}
 		});

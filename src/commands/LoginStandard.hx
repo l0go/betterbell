@@ -15,23 +15,24 @@ class LoginStandard implements Command {
 			}));
 			return;
 		}
-		DB.instance.validCredentials(json.username, json.password).then(_ -> {
+		entities.User.findByCredentials(json.username, json.password).then(u -> {
+			if (u == null) {
+				r.send(haxe.Json.stringify({
+					status: Routes.Status.FAILURE,
+					action: Routes.Commands.LOGIN_STANDARD,
+					message: "Invalid Credentials",
+				}));
+				return null;
+			}
+			return entities.Session.enroll(u);
+		}).then(session -> {
+			if (session == null) return null;
 			r.authenticated = true;
-			return DB.instance.enrollSession(json.username);
-		}, e -> {
-			r.send(haxe.Json.stringify({
-				status: Routes.Status.FAILURE,
-				action: Routes.Commands.LOGIN_STANDARD,
-				message: "Invalid Credentials",
-			}));
-			return null;
-		}).then(token -> {
-			r.token = token;
 			r.send(haxe.Json.stringify({
 				status: Routes.Status.SUCCESS,
 				action: Routes.Commands.IS_AUTHENTICATED,
 				value: r.authenticated,
-				token: token,
+				token: session.accessToken,
 			}));
 		});
 	}

@@ -13,6 +13,9 @@ class DeleteJob implements Command {
 			}));
 			return;
 		}
-		DB.instance.deleteJob(json.id);
+		entities.Job.findById(json.id).then(r -> {
+			r.delete();
+		});
+		DB.instance.broadcastUpdateJobs();
 	}
 }

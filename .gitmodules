@@ -1,0 +1,36 @@
+[submodule "haxe_modules/crypto"]
+	path = haxe_modules/crypto
+	url = https://github.com/HaxeFoundation/crypto
+[submodule "haxe_modules/db-core"]
+	path = haxe_modules/db-core
+	url = https://github.com/core-haxe/db-core
+[submodule "haxe_modules/db-sqlite"]
+	path = haxe_modules/db-sqlite
+	url = https://github.com/core-haxe/db-sqlite
+[submodule "haxe_modules/genkit_miniaudio"]
+	path = haxe_modules/genkit_miniaudio
+	url = https://github.com/alchemy-haxe/genkit_miniaudio
+[submodule "haxe_modules/hxWebSockets"]
+	path = haxe_modules/hxWebSockets
+	url = https://github.com/ianharrigan/hxWebSockets
+[submodule "haxe_modules/hxcpp"]
+	path = haxe_modules/hxcpp
+	url = https://github.com/HaxeFoundation/hxcpp
+[submodule "haxe_modules/logging"]
+	path = haxe_modules/logging
+	url = https://github.com/core-haxe/logging
+[submodule "haxe_modules/promises"]
+	path = haxe_modules/promises
+	url = https://github.com/core-haxe/promises
+[submodule "haxe_modules/sqlite3"]
+	path = haxe_modules/sqlite3
+	url = https://github.com/core-haxe/sqlite3
+[submodule "haxe_modules/libcron"]
+	path = haxe_modules/libcron
+	url = https://github.com/l0go/libcron-haxe
+[submodule "haxe_modules/libsqlite3"]
+	path = haxe_modules/libsqlite3
+	url = https://github.com/core-haxe/libsqlite3
+[submodule "haxe_modules/entities"]
+	path = haxe_modules/entities
+	url = https://github.com/core-haxe/entities2

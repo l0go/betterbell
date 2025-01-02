@@ -14,12 +14,10 @@ class CreateJob implements Command {
 			return;
 		}
 
-		DB.instance.addJob(json.job).then(null, e -> {
-			r.send(haxe.Json.stringify({
-				status: Routes.Status.FAILURE,
-				action: Routes.Commands.CREATE_JOB,
-				message: "Could not add job to database"
-			}));
-		});
+		final job = new entities.Job();
+		job.expression = json.job;
+		job.isToggled = true;
+		job.add();
+		DB.instance.broadcastUpdateJobs();
 	}
 }

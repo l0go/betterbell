@@ -14,12 +14,18 @@ class UpdateJob implements Command {
 			return;
 		}
 
-		DB.instance.addJob(json.job, true, json.id).then(null, e -> {
-			r.send(haxe.Json.stringify({
-				status: Routes.Status.FAILURE,
-				action: Routes.Commands.UPDATE_JOB,
-				message: e,
-			}));
+		entities.Job.findById(json.id).then(j -> {
+			if (j == null) {
+				r.send(haxe.Json.stringify({
+					status: Routes.Status.FAILURE,
+					action: Routes.Commands.UPDATE_JOB,
+					message: "Job does not exist",
+				}));
+				return;
+			}
+			j.expression = json.job;
+			j.update();
+			DB.instance.broadcastUpdateJobs();
 		});
 	}
 }

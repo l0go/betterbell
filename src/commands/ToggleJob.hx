@@ -14,6 +14,9 @@ class ToggleJob implements Command {
 			return;
 		}
 		final value = (json.value : String).toLowerCase() == "true";
-		DB.instance.setJobToggled(json.id, value);
+		entities.Job.findById(json.id).then(r -> {
+			r.isToggled = value;
+			r.update();
+		});
 	}
 }

@@ -5,8 +5,10 @@ class LoginToken implements Command {
 
 	public function new() {}
 	public function run(r: Routes, json: Dynamic) {
-		DB.instance.validSession(json.username, json.token).then(result -> {
-			if (result) {
+		entities.User.findByUsername(json.username).then(user -> {
+			return entities.Session.findByCredentials(user, json.token);
+		}).then(result -> {
+			if (result != null) {
 				r.authenticated = true;
 				r.token = json.token;
 				r.send(haxe.Json.stringify({

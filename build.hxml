@@ -4,6 +4,7 @@
 -L genkit_miniaudio
 -L logging
 -L hxWebSockets
+-L entities
 -L db-core
 -L db-sqlite
 -L sqlite3
