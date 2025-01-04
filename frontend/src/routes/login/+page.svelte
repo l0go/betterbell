@@ -47,25 +47,6 @@
 	}
 
 	.form {
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
 		width: 35vw;
-	}
-
-	label {
-		font-size: 16px;
-	}
-
-	input[type="text"],
-	input[type="password"] {
-		padding: 9px;
-		border-radius: 6px;
-		border: 1px solid var(--fg);
-	}
-
-	input:focus {
-		outline: none;
-		border: 2px solid var(--accent-bg) !important;
 	}
 </style>

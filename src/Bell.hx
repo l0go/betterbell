@@ -1,5 +1,9 @@
 package;
 
+import promises.PromiseUtils;
+import promises.Promise;
+import haxe.Json;
+import hx.ws.WebSocket;
 import haxe.io.Bytes;
 import libcron.Scheduler;
 import Miniaudio;
@@ -56,6 +60,25 @@ class Bell {
 	public function ring(?job: Int) {
 		log.info("Ring!");
 		Miniaudio.ma_sound_start(sound);
+		entities.Peer.findAll().then(peers -> {
+			var p : Array<() -> Promise<Bool>> = [];
+			for (peer in peers) {
+				if (peer.address == "BETTERBELL__SELF") continue;
+				p.push(() -> {
+					return new Promise((resolve, reject) -> {
+						var ws = new WebSocket('ws://${peer.address}');
+						ws.onopen = () -> {
+							ws.send(Json.stringify({
+								action: "PEER_RING",
+								token: peer.accessToken,
+							}));
+							resolve(true);
+						};
+					});
+				});
+			}
+			PromiseUtils.runAll(p);
+		});
 	}
 
 	static function instanceRing() {

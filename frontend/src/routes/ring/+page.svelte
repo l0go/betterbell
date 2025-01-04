@@ -39,5 +39,9 @@
 	button {
 		border: none;
 		background: none;
+		height: 75%;
+		img {
+			height: 100%;
+		}
 	}
 </style>

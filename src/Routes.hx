@@ -18,6 +18,7 @@ enum abstract Commands(String) to String {
 	final LOGIN_STANDARD;
 	final LOGIN_TOKEN;
 	final RING;
+	final PEER_RING;
 }
 
 enum abstract Status(String) to String {
@@ -39,6 +40,7 @@ class Routes extends WebSocketHandler {
 		LOGIN_STANDARD => new commands.LoginStandard(),
 		LOGIN_TOKEN => new commands.LoginToken(),
 		RING => new commands.Ring(),
+		PEER_RING => new commands.PeerRing(),
 	];
 
 	public function new(s: SocketImpl) {

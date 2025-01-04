@@ -22,11 +22,10 @@ class LoginStandard implements Command {
 					action: Routes.Commands.LOGIN_STANDARD,
 					message: "Invalid Credentials",
 				}));
-				return null;
+				throw null;
 			}
 			return entities.Session.enroll(u);
 		}).then(session -> {
-			if (session == null) return null;
 			r.authenticated = true;
 			r.send(haxe.Json.stringify({
 				status: Routes.Status.SUCCESS,

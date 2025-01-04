@@ -8,7 +8,7 @@ class Session implements IEntity {
 	@:size(36) public var accessToken: String;
 
 	public static function findByCredentials(user: entities.User, accessToken: String) {
-		return find(Query.query($user == user.userId && $accessToken == accessToken));
+		return find(Query.query($user == user && $accessToken == accessToken));
 	}
 
 	public static function enroll(user: entities.User): Promise<Session> {
