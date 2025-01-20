@@ -90,3 +90,35 @@ input:focus {
 	gap: 16px;
 	width: 100%;
 }
+
+.card {
+	display: flex;
+	width: 100%;
+	border: none;
+	border-radius: inherit;
+	justify-content: space-between;
+	align-items: center;
+	background-color: var(--bg);
+	padding: 12px;
+	padding-top: 16px;
+	padding-bottom: 16px;
+	border-bottom: 1px solid var(--header-shadow);
+	transition: 200ms ease-out;
+}
+.card:hover {
+	background-color: var(--header);
+}
+
+.card div {
+	display: flex;
+	justify-content: space-between;
+	gap: 10px;
+}
+:global(.card:first-child) {
+	border-top-left-radius: 8px;
+	border-top-right-radius: 8px;
+}
+:global(.card:last-of-type) {
+	border-bottom-left-radius: 8px;
+	border-bottom-right-radius: 8px;
+}

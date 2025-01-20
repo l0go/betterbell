@@ -27,7 +27,7 @@ class UpdateJob implements Command {
 			job.expression = json.job;
 			job.update();
 			Bell.schedule(job.expression, job.jobId);
-			DB.instance.broadcastUpdateJobs();
+			entities.Job.broadcastUpdate();
 		});
 	}
 }

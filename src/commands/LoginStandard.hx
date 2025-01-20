@@ -1,6 +1,5 @@
 package commands;
 
-
 class LoginStandard implements Command {
 	public var requiresAuthentication = false;
 
@@ -33,6 +32,7 @@ class LoginStandard implements Command {
 				value: r.authenticated,
 				token: session.accessToken,
 			}));
+			entities.Peer.broadcastUpdate(r);
 		});
 	}
 }

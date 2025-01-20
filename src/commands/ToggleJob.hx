@@ -30,6 +30,6 @@ class ToggleJob implements Command {
 			}
 			return job.update();
 		});
-		DB.instance.broadcastUpdateJobs();
+		entities.Job.broadcastUpdate();
 	}
 }

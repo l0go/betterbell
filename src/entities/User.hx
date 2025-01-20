@@ -19,6 +19,9 @@ class User implements IEntity {
 
 	public static function findByCredentials(username: String, password: String): Promise<User> {
 		return findByUsername(username).then(r -> {
+			if (r == null) {
+				return null;
+			}
 			var hashword = hashPassword(password, r.salt);
 			return find(Query.query($username == username && $hash == hashword.hash));
 		});

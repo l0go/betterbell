@@ -1,6 +1,6 @@
 package commands;
 
-class DeleteJob implements Command {
+class DeletePeer implements Command {
 	public var requiresAuthentication = true;
 
 	public function new() {}
@@ -8,22 +8,22 @@ class DeleteJob implements Command {
 		if (json.id == null) {
 			r.send(haxe.Json.stringify({
 				status: Routes.Status.FAILURE,
-				action: Routes.Commands.DELETE_JOB,
+				action: Routes.Commands.DELETE_PEER,
 				message: "ID is null",
 			}));
 			return;
 		}
-		entities.Job.findById(json.id).then(job -> {
-			if (job == null) {
+		entities.Peer.findById(json.id).then(peer -> {
+			if (peer == null) {
 				r.send(haxe.Json.stringify({
 					status: Routes.Status.FAILURE,
-					action: Routes.Commands.DELETE_JOB,
-					message: "Job does not exist",
+					action: Routes.Commands.DELETE_PEER,
+					message: "Peer does not exist",
 				}));
+			} else {
+				peer.delete();
 			}
-			Bell.unschedule(job.jobId);
-			return job.delete();
 		});
-		entities.Job.broadcastUpdate();
+		entities.Peer.broadcastUpdate();
 	}
 }

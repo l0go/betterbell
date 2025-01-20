@@ -2,7 +2,8 @@
 	import Add from "../Add.svelte";
 	import Modal from "../Modal.svelte";
 	import toast from "svelte-hot-french-toast";
-	import { websocketState } from "$lib/websocket-bridge.svelte";
+	import { websocketState, addPeer } from "$lib/websocket-bridge.svelte";
+	import Peer from "./Peer.svelte";
 
 	let ip = $state("");
 	let token = $state("");
@@ -12,8 +13,13 @@
 		showModal = true;
 	}
 
-	function addPeer() {
+	function createPeer() {
+		if (ip.length <= 0 || token.length <= 0) {
+			toast.success("Length of IP or Token must exceed 0");
+			return;
+		}
 		showModal = false;
+		addPeer(ip, token);
 		toast.success("Job added");
 	}
 </script>
@@ -22,12 +28,18 @@
 	<title>Peers - Betterbell</title>
 </svelte:head>
 
-<p>
-	Lorem
-</p>
 {#if websocketState.jobs.size > 0}
+	{#each websocketState.peers as [_, peer]}
+		{#if peer.address == "BETTERBELL__SELF"}
+			<p>This instance's private token is <span class="secret">{peer.token}</span> (hover to reveal)</p>
+		{/if}
+	{/each}
+
 	<ul class="jobs">
-		{#each websocketState.jobs as [id, job]}
+		{#each websocketState.peers as [id, peer]}
+			{#if peer.address != "BETTERBELL__SELF"}
+				<Peer id={id} title={peer.address} />
+			{/if}
 		{/each}
 	</ul>
 {/if}
@@ -42,7 +54,7 @@
 		<input
 			type="submit"
 			value="Add Peer"
-			onclick={addPeer}
+			onclick={createPeer}
 			class="button button-lg button-accent"
 		/>
 	</div>
@@ -62,5 +74,14 @@
 
 	.form {
 		padding-top: 16px;
+	}
+
+	.secret {
+		background-color: black;
+		color: black;
+	}
+
+	.secret:hover {
+		background-color: white;
 	}
 </style>

@@ -12,5 +12,6 @@
 -L libcron
 
 -w -WDeprecated
+-D message.reporting=pretty
 --main Main
 --cpp out/

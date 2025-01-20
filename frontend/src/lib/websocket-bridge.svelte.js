@@ -8,6 +8,8 @@ export const websocketState = $state({
 	authenticated: false,
 	/** @type {Map<number, any>} */
 	jobs: new SvelteMap(),
+	/** @type {Map<number, any>} */
+	peers: new SvelteMap(),
 });
 
 /** @type {WebSocket} */
@@ -16,9 +18,7 @@ let ws;
 export function connect() {
 	if (browser) {
 		ws = new WebSocket("ws://127.0.0.1:1928/");
-		//const token = cookies.get("token");
-		//C
-		//
+
 		ws.addEventListener("open", () => {
 			const username = Cookies.get("username");
 			const token = Cookies.get("token");
@@ -58,6 +58,12 @@ export function connect() {
 								throwExceptionOnParseError: false,
 							}),
 						});
+					});
+					break;
+				case "UPDATE_PEERS":
+					websocketState.peers.clear();
+					data.peers.forEach((/** @type {{id: number, address: string, token: Null<string>}} */ peer) => {
+						websocketState.peers.set(peer.id, peer);
 					});
 					break;
 			}
@@ -160,6 +166,33 @@ export function ring() {
 	ws.send(
 		JSON.stringify({
 			action: "RING",
+		}),
+	);
+}
+
+
+/**
+ * @param {string} address
+ * @param {string} accessToken
+ */
+export function addPeer(address, accessToken) {
+	ws.send(
+		JSON.stringify({
+			action: "CREATE_PEER",
+			address: address,
+			accessToken: accessToken,
+		}),
+	);
+}
+
+/**
+ * @param {number} id
+ */
+export function deletePeer(id) {
+	ws.send(
+		JSON.stringify({
+			action: "DELETE_PEER",
+			id: id,
 		}),
 	);
 }

@@ -18,6 +18,9 @@ enum abstract Commands(String) to String {
 	final LOGIN_STANDARD;
 	final LOGIN_TOKEN;
 	final RING;
+	final CREATE_PEER;
+	final DELETE_PEER;
+	final UPDATE_PEERS;
 	final PEER_RING;
 }
 
@@ -40,6 +43,8 @@ class Routes extends WebSocketHandler {
 		LOGIN_STANDARD => new commands.LoginStandard(),
 		LOGIN_TOKEN => new commands.LoginToken(),
 		RING => new commands.Ring(),
+		CREATE_PEER => new commands.CreatePeer(),
+		DELETE_PEER => new commands.DeletePeer(),
 		PEER_RING => new commands.PeerRing(),
 	];
 
@@ -48,7 +53,7 @@ class Routes extends WebSocketHandler {
 
 		onopen = () -> {
 			log.info(id + ". OPEN");
-			DB.instance.broadcastUpdateJobs(this);
+			entities.Job.broadcastUpdate();
 		};
 
         onclose = () -> {

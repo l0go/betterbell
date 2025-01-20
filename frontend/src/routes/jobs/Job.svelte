@@ -31,7 +31,7 @@
 	}
 </script>
 
-<button class="job" onclick={onPress}>
+<button class="card" onclick={onPress}>
 	<p class="title">{title}</p>
 	<div>
 		<Switch bind:toggled {onToggled} />
@@ -53,36 +53,3 @@
 		<button onclick={onUpdateJob} class="button-lg button-accent button">Update Job</button>
 	</div>
 </Modal>
-
-<style>
-	.job {
-		display: flex;
-		width: 100%;
-		border: none;
-		justify-content: space-between;
-		align-items: center;
-		background-color: var(--bg);
-		padding: 12px;
-		padding-top: 16px;
-		padding-bottom: 16px;
-		border-bottom: 1px solid var(--header-shadow);
-		transition: 200ms ease-out;
-	}
-	.job:hover {
-		background-color: var(--header);
-	}
-
-	div {
-		display: flex;
-		justify-content: space-between;
-		gap: 10px;
-	}
-	:global(.job:first-child) {
-		border-top-left-radius: 8px;
-		border-top-right-radius: 8px;
-	}
-	:global(.job:last-of-type) {
-		border-bottom-left-radius: 8px;
-		border-bottom-right-radius: 8px;
-	}
-</style>

@@ -5,7 +5,7 @@ class PeerRing implements Command {
 	
 	public function new() {}
 	public function run(r: Routes, json: Dynamic) {
-		entities.Peer.findByCredentials(json.address, json.token).then(peer -> {
+		entities.Peer.findByCredentials("BETTERBELL__SELF", json.token).then(peer -> {
 			if (peer != null) {
 				Bell.instance.ring();
 				r.send(haxe.Json.stringify({

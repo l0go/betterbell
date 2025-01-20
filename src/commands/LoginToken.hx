@@ -6,6 +6,9 @@ class LoginToken implements Command {
 	public function new() {}
 	public function run(r: Routes, json: Dynamic) {
 		entities.User.findByUsername(json.username).then(user -> {
+			if (user == null) {
+				throw null;
+			}
 			return entities.Session.findByCredentials(user, json.token);
 		}).then(result -> {
 			if (result != null) {
@@ -17,6 +20,7 @@ class LoginToken implements Command {
 					value: r.authenticated,
 					token: json.token,
 				}));
+				entities.Peer.broadcastUpdate(r);
 			} else {
 				r.send(haxe.Json.stringify({
 					status: Routes.Status.FAILURE,

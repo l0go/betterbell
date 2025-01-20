@@ -29,6 +29,8 @@ class Main {
 				var peer = new entities.Peer();
 				peer.address = "BETTERBELL__SELF";
 				peer.accessToken = Util.generateUUID();
+				trace(peer.accessToken);
+				peer.add();
 			}
 		});
 
